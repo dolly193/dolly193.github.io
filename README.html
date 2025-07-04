@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uma Surpresa...</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  <style>
+    /* Estilos gerais e para centralizar o conteúdo */
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden; /* Evita barras de rolagem */
+      transition: background-color 1s; /* Suaviza a cor de fundo inicial */
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100%;
+      text-align: center;
+    }
+
+    /* Estilo do botão inicial */
+    #trollButton {
+      padding: 20px 40px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      background-color: #fff;
+      border: 3px solid #333;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    #trollButton:hover {
+      transform: scale(1.1);
+    }
+
+    /* Estilo das mensagens */
+    #trollMessage, #secondMessage, #finalWarning,
+    .post-credits-message,
+    #cagaoMessage {
+      font-size: 5vw; /* Tamanho da fonte responsivo */
+      font-weight: bold;
+      color: white;
+      text-shadow: 3px 3px 6px #000000;
+      /* Posicionamento para que as mensagens se sobreponham no mesmo lugar */
+      position: absolute;
+      width: 100%;
+      left: 0;
+      right: 0;
+    }
+
+    /* Estilo do botão que foge */
+    #runawayButton {
+      padding: 15px 30px;
+      font-size: 20px;
+      cursor: pointer;
+      position: absolute; /* Essencial para que ele possa se mover pela tela */
+      transition: top 0.3s ease-out, left 0.3s ease-out; /* Animação suave */
+      border-radius: 8px;
+      border: 2px solid #333;
+      background-color: #f0f0f0;
+    }
+
+    /* Estilo das mensagens de canto */
+    .corner-message {
+        position: absolute;
+        font-size: 2vw;
+        font-weight: bold;
+        color: white;
+        text-shadow: 2px 2px 4px #000;
+    }
+    #corner-tl { top: 20px; left: 20px; }
+    #corner-tr { top: 20px; right: 20px; text-align: right; }
+    #corner-bl { bottom: 20px; left: 20px; }
+    #corner-br { bottom: 20px; right: 20px; text-align: right; }
+
+    /* Classe para esconder elementos */
+    .hidden {
+      display: none;
+    }
+
+    /* Animação de fundo RGB */
+    @keyframes animacao-rgb {
+      0%   { background-color: hsl(0, 100%, 50%); }   /* Vermelho */
+      16%  { background-color: hsl(60, 100%, 50%); }  /* Amarelo */
+      33%  { background-color: hsl(120, 100%, 50%); } /* Verde */
+      50%  { background-color: hsl(180, 100%, 50%); } /* Ciano */
+      66%  { background-color: hsl(240, 100%, 50%); } /* Azul */
+      83%  { background-color: hsl(300, 100%, 50%); } /* Magenta */
+      100% { background-color: hsl(0, 100%, 50%); }   /* Volta ao Vermelho */
+    }
+
+    /* Classe que aplica a animação */
+    .rgb-background {
+      animation: animacao-rgb 8s infinite linear;
+    }
+
+    /* Animação de fundo Preto e Branco */
+    @keyframes animacao-bw {
+        0%   { background-color: #000000; }
+        50%  { background-color: #ffffff; }
+        100% { background-color: #000000; }
+    }
+
+    .bw-background {
+        animation: animacao-bw 4s infinite linear;
+    }
+
+    /* Animação de fundo Ciano e Roxo */
+    @keyframes animacao-cyan-purple {
+      0%   { background-color: hsl(180, 100%, 50%); } /* Ciano */
+      50%  { background-color: hsl(300, 100%, 50%); } /* Magenta/Roxo */
+      100% { background-color: hsl(180, 100%, 50%); } /* Volta ao Ciano */
+    }
+
+    .cyan-purple-background {
+      animation: animacao-cyan-purple 4s infinite linear;
+    }
+
+    /* Animação de piscar para texto */
+    @keyframes blink-effect {
+        50% { opacity: 0; }
+    }
+
+    .blinking-text {
+        animation: blink-effect 1s step-end infinite;
+    }
+
+    /* Efeito de "bug" / Glitch */
+    @keyframes glitch-effect {
+      0% { transform: translate(0); }
+      20% { transform: translate(-3px, 3px); }
+      40% { transform: translate(-3px, -3px); }
+      60% { transform: translate(3px, 3px); }
+      80% { transform: translate(3px, -3px); }
+      100% { transform: translate(0); }
+    }
+
+    @keyframes scanline-effect {
+      0% { top: -100%; }
+      100% { top: 100%; }
+    }
+
+    .glitch-active .container {
+      /* Aplica um tremor constante a todo o conteúdo */
+      animation: glitch-effect 0.2s infinite linear alternate-reverse;
+    }
+
+    .glitch-active::after {
+      /* Cria uma sobreposição com linhas de varredura (scanlines) */
+      content: ' ';
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+      pointer-events: none;
+      animation: scanline-effect 0.4s infinite linear;
+      background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 255, 255, 0.2) 2px, rgba(255, 255, 255, 0.2) 4px);
+    }
+
+    /* Botão Triangular */
+    #triangleButtonContainer {
+        position: relative;
+        cursor: pointer;
+        width: 250px;
+        height: 220px;
+        text-align: center;
+        transition: transform 0.2s;
+    }
+    #triangleButtonContainer:hover {
+        transform: scale(1.05);
+    }
+    .triangle-shape {
+        width: 0;
+        height: 0;
+        border-left: 125px solid transparent;
+        border-right: 125px solid transparent;
+        border-bottom: 220px solid #f0f0f0;
+    }
+    .triangle-content {
+        position: absolute;
+        top: 55%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #333;
+        font-weight: bold;
+    }
+    .roblox-logo {
+        font-size: 50px;
+    }
+    .button-text {
+        font-size: 20px;
+    }
+
+    /* Falso Alerta do Chrome */
+    #fakeAlert {
+        background-color: #f1f1f1;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 20px;
+        width: 80%;
+        max-width: 500px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        text-align: left;
+    }
+    #fakeAlertHeader {
+        font-weight: bold;
+        font-size: 16px;
+        color: #333;
+        margin-bottom: 15px;
+    }
+    #fakeAlertBody {
+        font-size: 14px;
+        color: #555;
+    }
+    #fakeAlertButton {
+        float: right;
+        margin-top: 15px;
+        padding: 8px 16px;
+        cursor: pointer;
+    }
+
+    /* Caixa de texto para início do jogo */
+    #gameStartMessage {
+        background-color: #1a1a1a;
+        color: #00ff00;
+        border: 2px solid #00ff00;
+        border-radius: 8px;
+        padding: 30px;
+        width: 80%;
+        max-width: 600px;
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        text-align: center;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 22px;
+        letter-spacing: 1px;
+    }
+
+    /* Estilos da Opção de Chave */
+    #keyOption {
+        margin-top: 20px;
+        text-align: center;
+    }
+    #keyLink {
+        color: #00ff00;
+        text-decoration: underline;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    #keyPromptContainer {
+        background-color: #1a1a1a;
+        color: #00ff00;
+        border: 2px solid #00ff00;
+        border-radius: 8px;
+        padding: 30px;
+        width: 80%;
+        max-width: 600px;
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        font-family: 'Courier New', Courier, monospace;
+    }
+    #keyInput, #keySubmitKey {
+        padding: 10px;
+        background-color: #333;
+        border: 1px solid #00ff00;
+        color: #00ff00;
+        font-size: 18px;
+        font-family: 'Courier New', Courier, monospace;
+    }
+    #keyInput {
+        width: calc(100% - 24px);
+        margin-bottom: 20px;
+    }
+    #keySubmitKey {
+        width: 100%;
+        cursor: pointer;
+        background-color: #00ff00;
+        color: #1a1a1a;
+        font-weight: bold;
+        border: none;
+    }
+
+    /* Estilos do Quiz */
+    #quizContainer {
+        background-color: #1a1a1a;
+        color: #00ff00;
+        border: 2px solid #00ff00;
+        border-radius: 8px;
+        padding: 30px;
+        width: 80%;
+        max-width: 600px;
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        font-family: 'Courier New', Courier, monospace;
+    }
+    #quizQuestion {
+        font-size: 22px;
+        margin-bottom: 20px;
+    }
+    #quizAnswer {
+        width: calc(100% - 24px);
+        padding: 10px;
+        background-color: #333;
+        border: 1px solid #00ff00;
+        color: #00ff00;
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+    #quizSubmit {
+        padding: 10px 20px;
+        background-color: #00ff00;
+        border: none;
+        color: #1a1a1a;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    @keyframes fall-down {
+        to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    @keyframes congratulations-anim {
+        0% { transform: scale(0) rotate(0deg); opacity: 0; }
+        50% { transform: scale(1.2) rotate(10deg); }
+        100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    #timerBarContainer {
+        width: 100%;
+        height: 10px;
+        background-color: #333;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+    #timerBar {
+        height: 100%;
+        width: 100%;
+        background-color: #00ff00;
+        border-radius: 5px;
+    }
+    .shrinking {
+        animation: shrink linear forwards;
+    }
+    @keyframes shrink {
+        0% {
+            width: 100%;
+            background-color: #00ff00; /* Verde */
+        }
+        50% {
+            background-color: #ffff00; /* Amarelo */
+        }
+        100% {
+            width: 0%;
+            background-color: #ff4d4d; /* Vermelho */
+        }
+    }
+
+    #errorMessage {
+        color: #ff4d4d; /* Vermelho para erro */
+        animation: congratulations-anim 1s forwards; /* Reutiliza a animação de aparição */
+    }
+
+    /* Estilos do Jogo de Admin - NOVO */
+    #adminGameContainer {
+        background-color: #0d0d0d;
+        color: #ff4d4d; /* Vermelho para perigo */
+        border: 2px solid #ff4d4d;
+        border-radius: 5px;
+        padding: 25px;
+        width: 90%;
+        max-width: 700px;
+        box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+        font-family: 'VT323', 'Courier New', monospace;
+        text-align: center;
+    }
+    #adminGameHeader {
+        font-size: 28px;
+        animation: blink-effect 1s step-end infinite;
+        margin-bottom: 20px;
+    }
+    #adminGameSequence {
+        font-size: 36px;
+        letter-spacing: 10px;
+        background-color: #222;
+        padding: 10px;
+        margin: 20px 0;
+        border: 1px dashed #ff4d4d;
+    }
+    #adminGameInput {
+        width: 80%;
+        padding: 10px;
+        background-color: #111;
+        border: 1px solid #ff4d4d;
+        color: #ff4d4d;
+        font-size: 24px;
+        text-align: center;
+        font-family: 'VT323', 'Courier New', monospace;
+        letter-spacing: 10px;
+        text-transform: uppercase;
+    }
+    #adminGameTimer {
+        font-size: 40px;
+        margin-top: 20px;
+        min-height: 45px;
+    }
+
+    /* Estilos do Painel de Admin */
+    #adminPanelContainer {
+        background-color: #0d0d0d;
+        color: #0f0;
+        border: 2px solid #0f0;
+        border-radius: 5px;
+        padding: 25px;
+        width: 90%;
+        max-width: 700px;
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+        font-family: 'VT323', 'Courier New', monospace;
+        text-align: left;
+    }
+    #adminPanelHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #0f0;
+        color: #0d0d0d;
+        padding: 5px 10px;
+        margin: -25px -25px 20px -25px; /* Estica o header para as bordas */
+        font-size: 24px;
+    }
+    #adminPanelBody ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 10px 0;
+    }
+    #adminPanelBody li {
+        padding: 8px 0;
+        font-size: 22px;
+        cursor: pointer;
+    }
+    #adminPanelBody li:before {
+        content: '> ';
+    }
+    #adminPanelBody li:hover {
+        background-color: #0f0;
+        color: #0d0d0d;
+    }
+    #adminActionStatus {
+        margin-top: 20px;
+        border-top: 1px dashed #0f0;
+        padding-top: 15px;
+        font-size: 20px;
+        min-height: 40px;
+    }
+
+    /* Tela Branca e Créditos Finais */
+    #whiteScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: white;
+      z-index: 10000;
+    }
+
+    #creditsContainer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 10001;
+      pointer-events: none;
+    }
+
+    #creditsText {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 4vw;
+      color: black;
+      white-space: nowrap;
+      animation: credits-fall 10s linear forwards;
+    }
+
+    @keyframes credits-fall {
+      from { top: -10%; }
+      to { top: 110%; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <button id="trollButton">Clique aqui!</button>
+
+    <h1 id="trollMessage" class="hidden">voce foi trollado!</h1>
+    <h2 id="secondMessage" class="hidden">espera voce ainda esta aqui?</h2>
+    <h2 id="finalWarning" class="hidden">VOCE NAO VAI CLICAR NESTE BOTAO</h2>
+
+    <button id="runawayButton" class="hidden">clique aqui :)</button>
+
+    <div id="corner-tl" class="corner-message hidden">terminou parabens</div>
+    <div id="corner-tr" class="corner-message hidden">terminou parabens</div>
+    <div id="corner-bl" class="corner-message hidden">terminou parabens</div>
+    <div id="corner-br" class="corner-message hidden">terminou parabens</div>
+
+    <div id="triangleButtonContainer" class="hidden">
+        <div class="triangle-shape"></div>
+        <div class="triangle-content">
+            <div class="roblox-logo">⚪</div>
+            <div class="button-text">CLICA LOGO BRO</div>
+        </div>
+    </div>
+
+    <div id="round6" class="post-credits-message hidden">🦑</div>
+    <div id="selokoMessage" class="post-credits-message hidden">seloko nao compensa.</div>
+    <div id="fakeAlert" class="hidden">
+        <div id="fakeAlertHeader">O Google Chrome diz:</div>
+        <div id="fakeAlertBody">SEU PC PRECISA DE 4TB DE RAM PARA RODAR ISSO.</div>
+        <button id="fakeAlertButton">OK</button>
+    </div>
+
+    <div id="gameStartMessage" class="hidden">
+        IREMOS COMEÇAR O JOGO NIGGERIA...
+    </div>
+
+    <div id="quizContainer" class="hidden">
+        <div id="timerBarContainer">
+            <div id="timerBar"></div>
+        </div>
+        <div id="quizQuestion">qual o nome do dolly</div>
+        <input type="text" id="quizAnswer" autocomplete="off">
+        <button id="quizSubmit">Enviar</button>
+        <div id="keyOption" class="hidden">
+            <a id="keyLink">TENHO A CHAVE</a>
+        </div>
+    </div>
+
+    <div id="keyPromptContainer" class="hidden">
+        <div style="margin-bottom: 20px; font-size: 22px;">insira a key abaixo</div>
+        <input type="text" id="keyInput" autocomplete="off">
+        <button id="keySubmitKey">Verificar</button>
+    </div>
+
+    <div id="congratulationsMessage" class="post-credits-message hidden" style="animation: congratulations-anim 1s forwards;">
+        CONGRATULATIONS
+    </div>
+
+    <div id="cagaoMessage" class="post-credits-message hidden">
+        cagao
+    </div>
+
+    <div id="errorMessage" class="post-credits-message hidden">
+        VOCE ERROU!
+    </div>
+
+    <div id="adminPanelContainer" class="hidden">
+        <div id="adminPanelHeader">
+            <span>[SYSTEM_CONSOLE]</span>
+            <span>USER: authorized_key_holder</span>
+        </div>
+        <div id="adminPanelBody">
+            <p>// SELECT A COMMAND:</p>
+            <ul>
+                <li data-action="reboot">INITIATE_SYSTEM_REBOOT</li>
+                <li data-action="files">ACCESS_SECRET_FILES</li>
+                <li data-action="troll">DEPLOY_GLOBAL_TROLL.EXE</li>
+                <li data-action="admin_game">JOGO DOS ADMINS</li>
+                <li data-action="logout">LOGOUT</li>
+            </ul>
+            <p id="adminActionStatus" class="hidden"></p>
+        </div>
+    </div>
+
+    <div id="adminGameContainer" class="hidden">
+        <div id="adminGameHeader">SYSTEM LOCKDOWN IMMINENT</div>
+        <div id="adminGameBody">
+            <p>TYPE THE DEACTIVATION SEQUENCE TO PREVENT MELTDOWN:</p>
+            <div id="adminGameSequence"></div>
+            <input type="text" id="adminGameInput" autocomplete="off">
+            <div id="adminGameTimer"></div>
+        </div>
+    </div>
+  </div>
+
+  <div id="whiteScreen" class="hidden"></div>
+  <div id="creditsContainer" class="hidden">
+      <div id="creditsText">creditos:dolly gostoso</div>
+  </div>
+
+  <!-- Elemento de áudio para o som de glitch -->
+  <audio id="glitchSound" src="https://www.myinstants.com/media/sounds/tv-static-02.mp3" preload="auto"></audio>
+  <audio id="errorSound" src="https://www.myinstants.com/media/sounds/tmp_28533-937868953.mp3" preload="auto"></audio>
+  <audio id="victorySound" src="https://www.myinstants.com/media/sounds/level-up-bonus-points.mp3" preload="auto"></audio>
+
+  <script>
+    // Seleciona os elementos da página
+    const trollButton = document.getElementById('trollButton');
+    const trollMessage = document.getElementById('trollMessage');
+    const secondMessage = document.getElementById('secondMessage');
+    const runawayButton = document.getElementById('runawayButton');
+    const finalWarning = document.getElementById('finalWarning');
+    const cornerMessages = document.querySelectorAll('.corner-message');
+    const whiteScreen = document.getElementById('whiteScreen');
+    const creditsContainer = document.getElementById('creditsContainer');
+    const triangleButtonContainer = document.getElementById('triangleButtonContainer');
+    const round6 = document.getElementById('round6');
+    const selokoMessage = document.getElementById('selokoMessage');
+    const fakeAlert = document.getElementById('fakeAlert');
+    const fakeAlertButton = document.getElementById('fakeAlertButton');
+    const fakeAlertHeader = document.getElementById('fakeAlertHeader');
+    const fakeAlertBody = document.getElementById('fakeAlertBody');
+    const gameStartMessage = document.getElementById('gameStartMessage');
+    const quizContainer = document.getElementById('quizContainer');
+    const quizQuestion = document.getElementById('quizQuestion');
+    const quizAnswer = document.getElementById('quizAnswer');
+    const quizSubmit = document.getElementById('quizSubmit');
+    const congratulationsMessage = document.getElementById('congratulationsMessage');
+    const keyOption = document.getElementById('keyOption');
+    const keyLink = document.getElementById('keyLink');
+    const keyPromptContainer = document.getElementById('keyPromptContainer');
+    const keyInput = document.getElementById('keyInput');
+    const keySubmitKey = document.getElementById('keySubmitKey');
+    const cagaoMessage = document.getElementById('cagaoMessage');
+    const timerBar = document.getElementById('timerBar');
+    const errorMessage = document.getElementById('errorMessage');
+    const glitchSound = document.getElementById('glitchSound');
+    const errorSound = document.getElementById('errorSound');
+    const victorySound = document.getElementById('victorySound');
+    const container = document.querySelector('.container');
+    const body = document.body;
+    const adminPanelContainer = document.getElementById('adminPanelContainer');
+    const adminActionStatus = document.getElementById('adminActionStatus');
+    const adminGameContainer = document.getElementById('adminGameContainer');
+    const adminGameSequence = document.getElementById('adminGameSequence');
+    const adminGameInput = document.getElementById('adminGameInput');
+    const adminGameTimer = document.getElementById('adminGameTimer');
+
+
+    // --- Funções Auxiliares ---
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+    function moveRunawayButton() {
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+      const buttonWidth = runawayButton.offsetWidth;
+      const buttonHeight = runawayButton.offsetHeight;
+      const newLeft = Math.random() * (screenWidth - buttonWidth);
+      const newTop = Math.random() * (screenHeight - buttonHeight);
+      runawayButton.style.left = `${newLeft}px`;
+      runawayButton.style.top = `${newTop}px`;
+    }
+
+    async function handleQuiz(questionText, correctAnswer, timeLimit = 10000, options = {}) {
+        // Prepara a interface do quiz
+        quizQuestion.innerHTML = questionText;
+        quizAnswer.value = '';
+        quizAnswer.disabled = false;
+        quizSubmit.disabled = false;
+        quizContainer.classList.remove('hidden');
+        quizAnswer.focus();
+
+        if (options.showKeyOption) {
+            keyOption.classList.remove('hidden');
+        }
+
+        // Reinicia e começa a animação da barra de tempo
+        timerBar.classList.remove('shrinking');
+        void timerBar.offsetWidth; // Força o navegador a redesenhar, reiniciando a animação
+        timerBar.style.animationDuration = `${timeLimit / 1000}s`;
+        timerBar.classList.add('shrinking');
+
+        // Espera por uma de três coisas: resposta, clique na chave, ou tempo esgotado
+        const result = await new Promise(async (resolve) => {
+            let timeoutId;
+            let hasResolved = false;
+
+            const quizSubmitHandler = () => {
+                if (hasResolved) return;
+                hasResolved = true;
+                clearTimeout(timeoutId);
+                const answer = quizAnswer.value.toLowerCase().trim();
+                resolve(answer === correctAnswer ? 'correct' : 'incorrect');
+            };
+
+            const keyLinkHandler = () => {
+                if (hasResolved) return;
+                hasResolved = true;
+                clearTimeout(timeoutId);
+                resolve('key_prompt');
+            };
+
+            quizSubmit.addEventListener('click', quizSubmitHandler, { once: true });
+            if (options.showKeyOption) {
+                keyLink.addEventListener('click', keyLinkHandler, { once: true });
+            }
+
+            timeoutId = setTimeout(() => {
+                if (hasResolved) return;
+                hasResolved = true;
+                resolve('timeout');
+            }, timeLimit);
+        });
+
+        // Limpeza da interface
+        keyOption.classList.add('hidden');
+        timerBar.classList.remove('shrinking');
+
+        if (result === 'correct') {
+            quizContainer.classList.add('hidden');
+            return 'correct';
+        } else if (result === 'key_prompt') {
+            quizContainer.classList.add('hidden');
+            return 'key_prompt';
+        } else { // 'incorrect' ou 'timeout'
+            // Animação de erro
+            quizAnswer.disabled = true;
+            quizSubmit.disabled = true;
+            errorSound.play();
+            const originalText = quizQuestion.textContent;
+            quizQuestion.innerHTML = ''; // Limpa o texto
+            originalText.split('').forEach((char, index) => {
+                const span = document.createElement('span');
+                span.textContent = char === ' ' ? '\u00A0' : char;
+                span.style.display = 'inline-block';
+                span.style.animation = `fall-down 1.5s ease-in forwards ${index * 0.05}s`;
+                quizQuestion.appendChild(span);
+            });
+
+            await sleep(2000);
+            quizContainer.classList.add('hidden');
+            return 'incorrect';
+        }
+    }
+
+    async function handleAdminGame() {
+        // Mostra o container do jogo
+        adminGameContainer.classList.remove('hidden');
+
+        // Configurações do jogo
+        const codeLength = 6;
+        const timeLimit = 15; // em segundos
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let correctCode = '';
+        for (let i = 0; i < codeLength; i++) {
+            correctCode += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+
+        // Prepara a interface do jogo
+        adminGameSequence.textContent = correctCode;
+        adminGameInput.value = '';
+        adminGameInput.maxLength = codeLength;
+        adminGameInput.disabled = false;
+        adminGameInput.focus();
+
+        // Lógica do jogo com Promise
+        const gameResult = await new Promise(resolve => {
+            let timeLeft = timeLimit;
+            adminGameTimer.textContent = timeLeft;
+
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                adminGameTimer.textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    resolve('timeout');
+                }
+            }, 1000);
+
+            adminGameInput.addEventListener('input', () => {
+                const typedCode = adminGameInput.value.toUpperCase();
+                if (typedCode.length === codeLength) {
+                    clearInterval(timerInterval);
+                    resolve(typedCode === correctCode ? 'win' : 'lose');
+                }
+            });
+        });
+
+        // Resultado do jogo
+        adminGameInput.disabled = true;
+        if (gameResult === 'win') {
+            victorySound.play();
+            adminGameTimer.textContent = 'SYSTEM STABILIZED. MELTDOWN AVERTED.';
+            adminGameContainer.style.borderColor = '#0f0'; // Borda verde
+            adminGameContainer.style.color = '#0f0'; // Texto verde
+        } else { // 'lose' ou 'timeout'
+            errorSound.play();
+            adminGameTimer.textContent = `DEACTIVATION FAILED. [${gameResult.toUpperCase()}]`;
+        }
+
+        await sleep(5000);
+        location.reload();
+    }
+    // --- Lógica Principal da Experiência ---
+    async function startExperience() {
+      // 1. Fase Inicial
+      await new Promise(resolve => trollButton.addEventListener('click', resolve, { once: true }));
+      trollButton.classList.add('hidden');
+      body.className = 'rgb-background';
+      trollMessage.classList.remove('hidden');
+
+      // 2. Fase do Botão Fugitivo
+      await sleep(5000);
+      trollMessage.classList.add('hidden');
+      secondMessage.classList.remove('hidden');
+
+      await sleep(1000);
+      secondMessage.classList.add('hidden');
+      runawayButton.classList.remove('hidden');
+
+      runawayButton.addEventListener('mouseover', moveRunawayButton);
+      const runawayClicked = new Promise(resolve => runawayButton.addEventListener('click', resolve, { once: true }));
+      const timeoutPromise = sleep(10000);
+      await Promise.race([runawayClicked, timeoutPromise]);
+
+      runawayButton.removeEventListener('mouseover', moveRunawayButton);
+      runawayButton.style.backgroundColor = '#90ee90';
+      await runawayClicked;
+
+      // 3. Fase Pós-Fuga e Glitch
+      runawayButton.classList.add('hidden');
+      finalWarning.classList.remove('hidden');
+
+      await sleep(3000);
+      finalWarning.classList.add('hidden');
+      body.className = 'bw-background';
+      cornerMessages.forEach(msg => msg.classList.remove('hidden'));
+
+      await sleep(4000);
+      body.classList.add('glitch-active');
+
+      // 4. Fase dos Créditos
+      await sleep(10000);
+      
+      whiteScreen.classList.remove('hidden');
+
+      await sleep(3000);
+      creditsContainer.classList.remove('hidden');
+
+      // 5. Fase do Botão Triângulo
+      await sleep(10000); // Espera os créditos terminarem
+      whiteScreen.classList.add('hidden');
+      creditsContainer.classList.add('hidden');
+      cornerMessages.forEach(msg => msg.classList.add('hidden'));
+      body.className = '';
+      body.style.backgroundColor = '#333';
+      triangleButtonContainer.classList.remove('hidden');
+
+      // 6. Fase do Alerta Falso
+      await new Promise(resolve => triangleButtonContainer.addEventListener('click', resolve, { once: true }));
+      triangleButtonContainer.classList.add('hidden');
+      round6.classList.remove('hidden');
+
+      await sleep(3000);
+      round6.classList.add('hidden');
+      selokoMessage.classList.remove('hidden');
+
+      await sleep(2000);
+      selokoMessage.classList.add('hidden');
+      body.style.backgroundColor = 'white';
+      fakeAlert.classList.remove('hidden');
+
+      // 7. Fase do Botão OK em movimento
+      await new Promise(resolve => fakeAlertButton.addEventListener('click', resolve, { once: true }));
+
+      // Esconde o texto do alerta, mas mantém a caixa visível
+      fakeAlertHeader.style.visibility = 'hidden';
+      fakeAlertBody.style.visibility = 'hidden';
+
+      await sleep(6000);
+
+      // Prepara o botão para se mover
+      const btnRect = fakeAlertButton.getBoundingClientRect();
+      fakeAlertButton.style.position = 'fixed';
+      fakeAlertButton.style.top = `${btnRect.top}px`;
+      fakeAlertButton.style.left = `${btnRect.left}px`;
+      fakeAlertButton.style.transition = 'top 1.5s ease-in-out';
+
+      await sleep(20); // Pequena pausa para o navegador aplicar os estilos
+
+      // Toca o som de glitch
+      glitchSound.play();
+
+      // Inicia o movimento para o final da tela
+      fakeAlertButton.style.top = `calc(100vh - ${btnRect.height}px - 20px)`;
+
+      await sleep(1500 + 2000); // Espera o movimento (1.5s) + 2s de pausa
+
+      fakeAlert.classList.add('hidden'); // Esconde a caixa de alerta e o botão
+      gameStartMessage.classList.remove('hidden'); // Mostra a mensagem final
+
+      // 8. Fase do Quiz
+      await sleep(3000);
+      gameStartMessage.classList.add('hidden');
+
+      // --- QUIZ 1 ---
+      const quiz1Result = await handleQuiz("qual o nome do dolly", "enzo", 10000);
+
+      if (quiz1Result === 'correct') {
+        // --- QUIZ 2 ---
+        await sleep(1000); // Pequena pausa entre as perguntas
+        const quiz2Result = await handleQuiz("qual e o nome do samuka?", "sabrunco", 10000, { showKeyOption: true });
+
+        if (quiz2Result === 'correct') {
+            // Resposta Certa para o Quiz 2
+            victorySound.play();
+            body.className = 'cyan-purple-background';
+            congratulationsMessage.classList.remove('hidden');
+            await sleep(4000);
+            location.reload();
+        } else if (quiz2Result === 'key_prompt') {
+            // Usuário escolheu inserir a chave
+            keyPromptContainer.classList.remove('hidden');
+            keyInput.focus();
+            const keyIsCorrect = await new Promise(resolve => {
+                keySubmitKey.addEventListener('click', () => {
+                    resolve(keyInput.value.toLowerCase().trim() === 'pa3iwo');
+                }, { once: true });
+            });
+
+            keyPromptContainer.classList.add('hidden');
+            if (keyIsCorrect) {
+                adminPanelContainer.classList.remove('hidden');
+
+                // Adiciona listeners para as opções do menu admin
+                adminPanelContainer.addEventListener('click', async (e) => {
+                    if (e.target.tagName === 'LI') {
+                        const action = e.target.dataset.action;
+                        adminActionStatus.classList.remove('hidden');
+                        adminActionStatus.textContent = `EXECUTING: ${e.target.textContent}...`;
+                        await sleep(1500);
+
+                        switch (action) {
+                            case 'reboot':
+                                adminActionStatus.textContent = 'SYSTEM REBOOTING...';
+                                await sleep(2000);
+                                location.reload();
+                                break;
+                            case 'files':
+                                adminActionStatus.textContent = 'ACCESS DENIED. HIGHER CLEARANCE REQUIRED.';
+                                break;
+                            case 'troll':
+                                adminActionStatus.textContent = 'TROLL.EXE DEPLOYED GLOBALLY. CHAOS ENSUES.';
+                                break;
+                            case 'admin_game':
+                                adminActionStatus.textContent = 'INITIATING ADMIN PROTOCOL...';
+                                await sleep(2000);
+                                adminPanelContainer.classList.add('hidden');
+                                await handleAdminGame();
+                                break;
+                            case 'logout':
+                                location.reload();
+                                break;
+                        }
+                    }
+                });
+            } else {
+                location.reload();
+            }
+        } else { // Resposta errada ou tempo esgotado para o Quiz 2
+            errorMessage.classList.remove('hidden');
+            await sleep(4000);
+            location.reload();
+        }
+      } else { // Resposta errada ou tempo esgotado para o Quiz 1
+        errorMessage.classList.remove('hidden');
+        await sleep(4000);
+        location.reload();
+      }
+    }
+
+    // Inicia a experiência
+    startExperience();
+  </script>
+
+</body>
+</html>
+
+    /* Estilo das mensagens */
+    #trollMessage, #secondMessage, #finalWarning,
+    #cagaoMessage,
+    .post-credits-message {
+      font-size: 5vw; /* Tamanho da fonte responsivo */
+      font-weight: bold;
+        }
+    }
+
+    #keyOption {
+        margin-top: 20px;
+        text-align: center;
+    }
+    #keyLink {
+        color: #00ff00;
+        text-decoration: underline;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    #keyPromptContainer {
+        background-color: #1a1a1a;
+        color: #00ff00;
+        border: 2px solid #00ff00;
+        border-radius: 8px;
+        padding: 30px;
+        width: 80%;
+        max-width: 600px;
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        font-family: 'Courier New', Courier, monospace;
+    }
+    #keyInput, #keySubmitKey {
+        padding: 10px;
+        background-color: #333;
+        border: 1px solid #00ff00;
+        color: #00ff00;
+        font-size: 18px;
+        font-family: 'Courier New', Courier, monospace;
+    }
+    #keyInput {
+        width: calc(100% - 24px);
+        margin-bottom: 20px;
+    }
+    #keySubmitKey {
+        width: 100%;
+        cursor: pointer;
+        background-color: #00ff00;
+        color: #1a1a1a;
+        font-weight: bold;
+        border: none;
+    }
+
+    #errorMessage {
+        color: #ff4d4d; /* Vermelho para erro */
+        animation: congratulations-anim 1s forwards; /* Reutiliza a animação de aparição */
+        <div id="quizQuestion">qual o nome do dolly</div>
+        <input type="text" id="quizAnswer" autocomplete="off">
+        <button id="quizSubmit">Enviar</button>
+        <div id="keyOption" class="hidden">
+            <a id="keyLink">TENHO A CHAVE</a>
+        </div>
+    </div>
+
+    <div id="keyPromptContainer" class="hidden">
+        <div style="margin-bottom: 20px; font-size: 22px;">insira a key abaixo</div>
+        <input type="text" id="keyInput" autocomplete="off">
+        <button id="keySubmitKey">Verificar</button>
+    </div>
+
+    <div id="congratulationsMessage" class="post-credits-message hidden" style="animation: congratulations-anim 1s forwards;">
+        CONGRATULATIONS
+    </div>
+
+    <div id="cagaoMessage" class="post-credits-message hidden">
+        cagao
+    </div>
+
+    <div id="errorMessage" class="post-credits-message hidden">
+        VOCE ERROU!
+    </div>
+    const quizAnswer = document.getElementById('quizAnswer');
+    const quizSubmit = document.getElementById('quizSubmit');
+    const congratulationsMessage = document.getElementById('congratulationsMessage');
+    const keyOption = document.getElementById('keyOption');
+    const keyLink = document.getElementById('keyLink');
+    const keyPromptContainer = document.getElementById('keyPromptContainer');
+    const keyInput = document.getElementById('keyInput');
+    const keySubmitKey = document.getElementById('keySubmitKey');
+    const cagaoMessage = document.getElementById('cagaoMessage');
+    const timerBar = document.getElementById('timerBar');
+    const errorMessage = document.getElementById('errorMessage');
+    const glitchSound = document.getElementById('glitchSound');
+      runawayButton.style.top = `${newTop}px`;
+    }
+
+    async function handleQuiz(questionText, correctAnswer, timeLimit = 10000, options = {}) {
+        // Prepara a interface do quiz
+        quizQuestion.innerHTML = questionText;
+        quizAnswer.value = '';
+        quizAnswer.disabled = false;
+        quizSubmit.disabled = false;
+        quizContainer.classList.remove('hidden');
+        quizAnswer.focus();
+
+        if (options.showKeyOption) {
+            keyOption.classList.remove('hidden');
+        }
+
+        // Reinicia e começa a animação da barra de tempo
+        timerBar.classList.remove('shrinking');
+        void timerBar.offsetWidth; // Força o navegador a redesenhar, reiniciando a animação
+        timerBar.style.animationDuration = `${timeLimit / 1000}s`;
+        timerBar.classList.add('shrinking');
+
+        // Espera por uma de três coisas: resposta, clique na chave, ou tempo esgotado
+        const result = await new Promise(async (resolve) => {
+            let timeoutId;
+            let hasResolved = false;
+
+            const quizSubmitHandler = () => {
+                if (hasResolved) return;
+                hasResolved = true;
+                clearTimeout(timeoutId);
+                const answer = quizAnswer.value.toLowerCase().trim();
+                resolve(answer === correctAnswer ? 'correct' : 'incorrect');
+            };
+
+            const keyLinkHandler = () => {
+                if (hasResolved) return;
+                hasResolved = true;
+                clearTimeout(timeoutId);
+                resolve('key_prompt');
+            };
+
+            quizSubmit.addEventListener('click', quizSubmitHandler, { once: true });
+            if (options.showKeyOption) {
+                keyLink.addEventListener('click', keyLinkHandler, { once: true });
+            }
+
+            timeoutId = setTimeout(() => {
+                if (hasResolved) return;
+                hasResolved = true;
+                resolve('timeout');
+            }, timeLimit);
+        });
+
+        // Limpeza da interface
+        keyOption.classList.add('hidden');
+        quizContainer.classList.add('hidden');
+        timerBar.classList.remove('shrinking');
+
+        if (result === 'correct') {
+            return 'correct';
+        } else if (result === 'key_prompt') {
+            return 'key_prompt';
+        } else { // 'incorrect' ou 'timeout'
+            // Animação de erro
+            quizAnswer.disabled = true;
+            quizSubmit.disabled = true;
+                quizQuestion.appendChild(span);
+            });
+
+            await sleep(2000);
+            return 'incorrect';
+        }
+    }
+
+      gameStartMessage.classList.add('hidden');
+
+      // --- QUIZ 1 ---
+      const quiz1Result = await handleQuiz("qual o nome do dolly", "enzo", 10000);
+
+      if (quiz1Result === 'correct') {
+        // --- QUIZ 2 ---
+        await sleep(1000); // Pequena pausa entre as perguntas
+        const quiz2Result = await handleQuiz("qual e o nome do samuka?", "sabrunco", 10000, { showKeyOption: true });
+
+        if (quiz2Result === 'correct') {
+            // Resposta Certa para o Quiz 2
+            victorySound.play();
+            congratulationsMessage.classList.remove('hidden');
+            await sleep(4000);
+            location.reload();
+        } else if (quiz2Result === 'key_prompt') {
+            // Usuário escolheu inserir a chave
+            keyPromptContainer.classList.remove('hidden');
+            keyInput.focus();
+            const keyIsCorrect = await new Promise(resolve => {
+                keySubmitKey.addEventListener('click', () => {
+                    resolve(keyInput.value.toLowerCase().trim() === 'pa3iwo');
+                }, { once: true });
+            });
+
+            keyPromptContainer.classList.add('hidden');
+            if (keyIsCorrect) {
+                cagaoMessage.classList.remove('hidden');
+            } else {
+                location.reload();
+            }
+        } else { // Resposta errada ou tempo esgotado para o Quiz 2
+            errorMessage.classList.remove('hidden');
+            await sleep(4000);
+            location.reload();
+        }
+      } else {
+        // Resposta errada ou tempo esgotado para o Quiz 1
+        errorMessage.classList.remove('hidden');
+        await sleep(4000);
+        location.reload();
+      }
+    }
+
